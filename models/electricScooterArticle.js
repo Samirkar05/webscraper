@@ -1,5 +1,7 @@
 const BaseArticle = require('./baseArticle');
 const mongoose = require('mongoose');
+const {scrapeBlackmarket, initiateSession} = require("./webscrape.js")
+
 
 const ElectricScooterSchema = new mongoose.Schema({
     name:{

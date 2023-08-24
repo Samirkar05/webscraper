@@ -3,14 +3,9 @@ const puppeteer = require('puppeteer-extra')
 // Add stealth plugin and use defaults 
 const pluginStealth = require('puppeteer-extra-plugin-stealth') 
 const {executablePath, Page} = require('puppeteer');
-//Database requires
-const mongoose = require('mongoose')
-const connectDB = require('./db');
-const { BaseArticle, MobileArticle, ElectricScooterArticle } = require('./models');
 
 //Custom imports
 const custom_websites = require("./websites.js")
-const GPT_Serialize_Multiple_MobileArticles = require("./aiSerialising.js")
 
 
 puppeteer.use(pluginStealth()) 
@@ -203,14 +198,14 @@ async function scrapeBlackmarket(sessionInfo, mobile){
     await page.waitForSelector(blackmarket.itemFinding.itemCardTag);
     await page.click(blackmarket.itemFinding.itemCardTag);  
 
-    const offers = []
+    const data = []
     const storagesAvailable = await getAllElements(page, blackmarket.itemFinding.storageBaseTag)
     for (const i in storagesAvailable){
         await page.click(blackmarket.itemFinding.storageBaseTag.replace("INDEX", String(i)))
         const prices = await getAllElements(page,blackmarket.itemFinding.pricesTag)
-        offers.push([storagesAvailable[i], prices])
+        data.push([storagesAvailable[i], prices])
     }
-    return {offers, sessionInfo: sessionInfo}
+    return {data, ...sessionInfo}
 }
 
 async function searchMilanuncios(sessionInfo, item){
@@ -240,7 +235,7 @@ async function iterPageMilanuncios(sessionInfo){
         return {url: post, ...desc, sourceWebsite: "Milanuncios"}
     })
     await nextPage(website.page, website)
-    return {data, sessionInfo: sessionInfo}
+    return {data, ...sessionInfo}
 }
 async function startWebsites(browser,website){
     const page = await browser.newPage()
@@ -261,27 +256,29 @@ async function initiateSession(){
 }
 
 
-(async () => {
-    // await connectDB();
-    // const page = await searchMilanuncios(custom_websites.milanuncios, "Iphone X")
-    // const articles = await iterPageMilanuncios(browser,custom_websites.milanuncios,page) 
-    // console.log("Entering processing")
-    // const processed_data  = await GPT_Serialize_Multiple_MobileArticles(articles)
-    // const data = []
-    // for (const i in processed_data){
-    //     data.push({...articles[i],...processed_data[i]})
-    // }
-    // console.log("Saving in database")
-    // // await scrapeBlackmarket(browser,custom_websites.blackmarket,"Iphone X")
-    // await MobileArticle.create(data);
-    // await browser.close();
-    const {browser, allPages}= await initiateSession()
-    let sessionInfo = {browser, allPages}
-    console.log(allPages.milanuncios)
-    sessionInfo = await searchMilanuncios(sessionInfo, "Iphone")
-    const bundle = await iterPageMilanuncios(sessionInfo)
-    bundle.sessionInfo =sessionInfo
-    console.log(sessionInfo.allPages.milanuncios.page.url())
-    const offer = await scrapeBlackmarket(sessionInfo,"Iphone 7")
-    console.log(offer.offers)
-})();
+// (async () => {
+//     // await connectDB();
+//     // const page = await searchMilanuncios(custom_websites.milanuncios, "Iphone X")
+//     // const articles = await iterPageMilanuncios(browser,custom_websites.milanuncios,page) 
+//     // console.log("Entering processing")
+//     // const processed_data  = await GPT_Serialize_Multiple_MobileArticles(articles)
+//     // const data = []
+//     // for (const i in processed_data){
+//     //     data.push({...articles[i],...processed_data[i]})
+//     // }
+//     // console.log("Saving in database")
+//     // // await scrapeBlackmarket(browser,custom_websites.blackmarket,"Iphone X")
+//     // await MobileArticle.create(data);
+//     // await browser.close();
+
+//     let sessionInfo = await initiateSession()
+//     sessionInfo = await searchMilanuncios(sessionInfo, "Iphone")
+//     sessionInfo = await iterPageMilanuncios(sessionInfo)
+//     console.log(sessionInfo.allPages.milanuncios.page.url())
+//     sessionInfo = await scrapeBlackmarket(sessionInfo,"Iphone 7")
+//     console.log(sessionInfo.data)
+// })();
+module.exports = {initiateSession, 
+    searchMilanuncios,
+    iterPageMilanuncios,
+    scrapeBlackmarket}
