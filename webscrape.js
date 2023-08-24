@@ -190,8 +190,8 @@ async function getAllElements(page, tag){
     }
     return foundings;
 }
-async function scrapeBlackmarket(init, mobile){
-    const {allPages} = init
+async function scrapeBlackmarket(sessionInfo, mobile){
+    const {allPages} = sessionInfo
     const page = allPages.blackmarket.page
     const blackmarket = allPages.blackmarket
 
@@ -210,12 +210,12 @@ async function scrapeBlackmarket(init, mobile){
         const prices = await getAllElements(page,blackmarket.itemFinding.pricesTag)
         offers.push([storagesAvailable[i], prices])
     }
-    return {offers, init}
+    return {offers, sessionInfo: sessionInfo}
 }
 
-async function searchMilanuncios(initialiser, item){
+async function searchMilanuncios(sessionInfo, item){
     //Initialise Milanuncios with product in mind
-    const {allPages} = initialiser
+    const {allPages} = sessionInfo
     const website = allPages.milanuncios
     const page = website.page
 
@@ -223,12 +223,12 @@ async function searchMilanuncios(initialiser, item){
     await page.type(website.search.searchBarTag, item);
     console.log("Going to click")
     await page.click(website.search.searchButtonTag);
-    return initialiser
+    return sessionInfo
 }
 
-async function iterPageMilanuncios(init){
+async function iterPageMilanuncios(sessionInfo){
     // Begin scraping that product
-    const {browser,allPages} = init
+    const {browser,allPages} = sessionInfo
     const website = allPages.milanuncios
     
     const lote = await cycle(website.page, website)
@@ -240,7 +240,7 @@ async function iterPageMilanuncios(init){
         return {url: post, ...desc, sourceWebsite: "Milanuncios"}
     })
     await nextPage(website.page, website)
-    return {data, init}
+    return {data, sessionInfo: sessionInfo}
 }
 async function startWebsites(browser,website){
     const page = await browser.newPage()
@@ -249,7 +249,7 @@ async function startWebsites(browser,website){
     return page
 }
 
-async function initialiser(){
+async function initiateSession(){
     const browser = await openBrowser()
     let allPages = {};
     for (let siteKey in custom_websites){
@@ -275,13 +275,13 @@ async function initialiser(){
     // // await scrapeBlackmarket(browser,custom_websites.blackmarket,"Iphone X")
     // await MobileArticle.create(data);
     // await browser.close();
-    const {browser, allPages}= await initialiser()
-    let init = {browser, allPages}
+    const {browser, allPages}= await initiateSession()
+    let sessionInfo = {browser, allPages}
     console.log(allPages.milanuncios)
-    init = await searchMilanuncios(init, "Iphone")
-    const bundle = await iterPageMilanuncios(init)
-    bundle.init =init
-    console.log(init.allPages.milanuncios.page.url())
-    const offer = await scrapeBlackmarket(init,"Iphone 7")
+    sessionInfo = await searchMilanuncios(sessionInfo, "Iphone")
+    const bundle = await iterPageMilanuncios(sessionInfo)
+    bundle.sessionInfo =sessionInfo
+    console.log(sessionInfo.allPages.milanuncios.page.url())
+    const offer = await scrapeBlackmarket(sessionInfo,"Iphone 7")
     console.log(offer.offers)
 })();
