@@ -17,8 +17,15 @@ async function processData(data, processor){
 }
 async function manageSaveMobileArticle(sessionInfo,data){
     await MobileArticle.create(data);
-    for (const i in data){
-        webscrape.scrapeBlackmarket(sessionInfo,data[i])
+    const mobiles = sessionInfo.data
+    for (const i in mobiles){
+        const mobile = mobiles[i]
+        sessionInfo = await webscrape.scrapeBlackmarket(sessionInfo,mobile.nombre)
+        const productPrice = {
+            name: mobile.nombre,
+            
+
+        }
     }
 }
 

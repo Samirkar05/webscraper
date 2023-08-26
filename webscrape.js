@@ -203,7 +203,7 @@ async function scrapeBlackmarket(sessionInfo, mobile){
     for (const i in storagesAvailable){
         await page.click(blackmarket.itemFinding.storageBaseTag.replace("INDEX", String(i)))
         const prices = await getAllElements(page,blackmarket.itemFinding.pricesTag)
-        data.push([storagesAvailable[i], prices])
+        data.push({storage:}storagesAvailable[i], prices])
     }
     return {data, ...sessionInfo}
 }
