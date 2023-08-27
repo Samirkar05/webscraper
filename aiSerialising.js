@@ -69,7 +69,7 @@ async function GPT_Serialize_Multiple_MobileArticles(articles){
         const req = await GPT_Serialize_MobileArticle(currentArticle.title,currentArticle.description)
         console.log(req[1])
         processed_data.push(getJSON(req[0][0].message.content))
-        console.log("Processed ", i, "/", articles.length,"articles.")
+        console.log("Processed ", Number(i)+1, "/", articles.length,"articles.")
     }
     console.log("Serialisation finished.")
     return processed_data

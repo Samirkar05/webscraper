@@ -35,7 +35,7 @@ async function autoScroll(page){
     await page.evaluate(async () =>{
         await new Promise((resolve) => {
             var totalHeight = 0;
-            var distance = 400;
+            var distance = 300;
             var timer = setInterval(() => {
                 var scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
@@ -45,7 +45,7 @@ async function autoScroll(page){
                     clearInterval(timer);
                     resolve();
                 }
-            }, 500);
+            }, 600);
         });
     })
 }
@@ -185,9 +185,13 @@ async function getAllElements(page, tag){
     }
     return foundings;
 }
-async function scrapeBlackmarket(sessionInfo, mobile){
-    const {allPages} = sessionInfo
-    const page = allPages.blackmarket.page
+async function  scrapeBlackmarket(sessionInfo, mobile){
+    console.log("Going to blackmarket")
+    const {browser,allPages} = sessionInfo
+    const page_url = allPages.blackmarket.page.url()
+    const page = await browser.newPage()
+    await page.goto(page_url)
+
     const blackmarket = allPages.blackmarket
 
     // Input mobile name in search bar and search
@@ -203,9 +207,11 @@ async function scrapeBlackmarket(sessionInfo, mobile){
     for (const i in storagesAvailable){
         await page.click(blackmarket.itemFinding.storageBaseTag.replace("INDEX", String(i)))
         const prices = await getAllElements(page,blackmarket.itemFinding.pricesTag)
-        data.push({storage:}storagesAvailable[i], prices])
+        data.push({storage: storagesAvailable[i], priceRange: prices})
     }
-    return {data, ...sessionInfo}
+    let {data: _, ...rest}= sessionInfo
+    await page.close()
+    return {data, ...rest}
 }
 
 async function searchMilanuncios(sessionInfo, item){
