@@ -43,7 +43,7 @@ async function sendGPTRequest(message){
 }
 
 async function GPT_Serialize_MobileArticle(title,description) {
-    const message = "Imagínate que eres un trabajador experto en una fábrica de móviles. Te dan un móvil y debes de rellenar los campos: marca (apple, huawei, samsung...), nombre, almacenamiento, vida de la batería (bateria en el json) y estado del poducto (elige entre 'nuevo', 'usado' o 'roto') (estado en el json). En aquellos campos que no se puedan intuir escribe ''. La respuesta deberá ser un objeto JSON. Aquí está el producto: " + title + " y su descripción es:" + description
+    const message = "Imagínate que eres un trabajador experto en una fábrica de móviles. Te dan un móvil y debes de rellenar los campos: marca (apple, huawei, samsung...), nombre (por ejemplo iphone 6 iphone SE, nunca del estilo iphone X 64 porque 64 es almacenamiento, igual con 32,128...), almacenamiento, vida de la batería (bateria en el json) y estado del poducto (elige entre 'nuevo', 'usado' o 'roto') (estado en el json). En aquellos campos que no se puedan intuir escribe ''. La respuesta deberá ser un objeto JSON. Aquí está el producto: " + title + " y su descripción es:" + description
     // const broken = "Si está roto, selecciona cuáles de los siguientes componentes estan dañados debido a la rotura que se especifica: 'frontScreen', 'backScreen', 'frontCamera', 'faceId', 'backCamera', 'button', 'speakers', 'battery', 'chargingPort' o 'microphone', y devuelve una lista con estos, que la lista se llame brokenParts."
     
     return await sendGPTRequest(message);

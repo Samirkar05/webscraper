@@ -13,7 +13,7 @@ const MAX_TIMEOUT = 60000 * 5
 
 async function openBrowser(){
     return await puppeteer.launch({
-        headless:false,
+        headless: "new",
         executablePath: executablePath(),
         slowMo: 300
     })

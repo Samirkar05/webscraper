@@ -4,15 +4,18 @@ const mongoose = require('mongoose');
 const MobileSchema = new mongoose.Schema({
     marca: {
         type: String,
-        required: true
+        required: true,
+        uppercase: true
     },
     nombre: {
         type: String,
-        required: true
+        required: true,
+        uppercase: true
     },
     almacenamiento: {
         type: String,
         required: false,
+        uppercase: true
     },ram: {
         type: String,
     },
@@ -36,6 +39,10 @@ const MobileSchema = new mongoose.Schema({
     }
 });
 
+MobileSchema.post('save', (doc, next) =>{
+    console.log("Created mobile product", doc.nombre)
+    next()
+})
 const MobileArticle = BaseArticle.discriminator('Mobile', MobileSchema);
 
 module.exports = MobileArticle;

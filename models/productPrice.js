@@ -9,11 +9,15 @@ const productPriceSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        uppercase: true,
+        unique: true
     },
     currentPrice: {
-        type: Number,
-        required: true
+        type: String,
+        required: true,
+        trim: true,
+        uppercase: true
     },
     lastUpdated: {
         type: Date,
